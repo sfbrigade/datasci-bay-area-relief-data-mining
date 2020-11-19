@@ -1,0 +1,16 @@
+counties
+Alameda
+Contra Costa
+Marin
+Napa
+San Francisco
+San Mateo
+Santa Clara
+Solano
+Sonoma
+
+cities
+["San Jose","San Francisco","Oakland","Fremont","Santa Rosa","Hayward","Sunnyvale","Concord","Santa Clara","Vallejo","Berkeley","Fairfield","Richmond","Antioch","Daly City","San Mateo","Vacaville","San Leandro","Livermore","Napa","Redwood City","Mountain View","Alameda","San Ramon","Pleasanton","Union City","Milpitas","Palo Alto","Walnut Creek","South San Francisco","Pittsburg","Cupertino","Petaluma","San Rafael","Novato","Brentwood","Gilroy","Dublin","Newark","Danville","San Bruno","Rohnert Park","Campbell","Morgan Hill","Pacifica","Martinez","Oakley","Pleasant Hill","Menlo Park","Foster City","Saratoga","Los Gatos","San Pablo","Los Altos","Burlingame","San Carlos","East Palo Alto","Suisun City","Benicia","Windsor","Belmont","Hercules","Lafayette","El Cerrito","Millbrae","American Canyon","Albany","Pinole","Dixon","Orinda","Moraga","Mill Valley","San Anselmo","Larkspur","Half Moon Bay","Healdsburg","Clayton","Hillsborough","Piedmont","Sonoma","Emeryville","Corte Madera","Tiburon","Cloverdale","Los Altos Hills","Fairfax","Sebastopol","Rio Vista","Cotati","Sausalito","Atherton","St. Helena","Woodside","Calistoga","Portola Valley","Brisbane","Monte Sereno","Yountville","Ross","Belvedere","Colma"]
+
+${city/county} small business (grant OR loan)
+bay area small business (grant OR loan)
