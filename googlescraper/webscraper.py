@@ -39,16 +39,39 @@ def scrape_url(url):
         ### path tag/attribute - almost always svg (there's also an svg tag)
         ### extract to remove unwanted tags before you get text
     for link in soup.find_all('a', href=True):  
-        # if 'tmcfinancing' not in tag.attrs['href']:
+        #### BeautifulSoup converts the values of the attribute class in a list eg. <div class="ABC BCD CDE123"> soup.div['class'] --> ['ABC', 'BCD', 'CDE123']
+
+        # get just the domain of the url
+            
+        #### link.svg returns either svg or None
+        if link.svg:
+            print("ignore, this has svg")
+        else:
+            print(link)
+            links[link.get_text()] = link
         
-        print(link)
-        links[link.get_text()] = link
+        
+        
     
     print(links)
 
-for grant in grants_list:
-    url = grant
-    scrape_url(url)
+
+### testing w/ just the first link
+grant = grants_list[0]
+url = grant
+print("URL = ", url)
+scrape_url(url)
+
+
+### this works - reinstate after testing
+# for grant in grants_list:
+#     url = grant
+#     scrape_url(url)
+
+
+
+
+
 
 ### note: filter out any non-bay area
 
