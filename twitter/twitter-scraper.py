@@ -11,7 +11,7 @@ data = List[Dict[str, str]]
 meta = Dict[str, str]
 api_response = Dict[str, Union[data, meta]]
 class TwitterScraper:
-    def __init__(self) -> None:
+    def __init__(self):
         self.set_secrets()
         self.next_token = ''
     
@@ -75,6 +75,14 @@ class TwitterScraper:
         """
         text = tweet['text']
         tweet['text'] = re.sub(r'\s+', ' ', text)
+        links = []
+        for link in re.findall(r'(https:\/\/[^,"\s+]*)', text):
+            if link[-1] == '.':
+                new_link  = link[:-1]
+                links.append(new_link)
+            else:
+                links.append(link)
+        tweet['links'] = links
         return tweet
 
     def paginate(self) -> data:
@@ -83,7 +91,7 @@ class TwitterScraper:
         """
         # initial search
         r = self.make_request()
-        self.to_tsv(r['data'])
+        self.to_csv(r['data'])
         meta = r['meta']
         print(meta)
         self.set_next_token(meta['next_token'] or '')
@@ -93,23 +101,23 @@ class TwitterScraper:
             try:
                 r = self.make_request()
                 print('Response Recieved -- Saving Results')
-                self.to_tsv(r['data'])
+                self.to_csv(r['data'])
                 meta = r['meta']
                 self.set_next_token(meta['next_token'] or '')
                 print('Results Saved')
             except:
                 print('Wait a while')
 
-    def to_tsv(self, results: List[Dict[str, str]]) -> None:
+    def to_csv(self, results: List[Dict[str, str]]) -> None:
         """
         Saves a dict of tweets into a TSV (tab-separated values) with id and text columns
         """
         clean_results = list(map(self.clean_text, results))
-        with open(self.find_file('tweets.tsv'), 'a+') as outfile:
+        with open(self.find_file('tweets.csv'), 'a+') as outfile:
             dw = csv.DictWriter(
                 outfile,
-                fieldnames=['id', 'text', 'created_at'],
-                delimiter='\t'
+                fieldnames=['id', 'text', 'created_at', 'links'],
+                delimiter=','
             )
             dw.writerows(clean_results)
 
@@ -122,4 +130,12 @@ class TwitterScraper:
 
 
 s = TwitterScraper()
-s.scrape('((bay area) OR (san francisco)) small business (grant OR loan OR assistance OR resource) -french')
+s.scrape('((bay area) OR (san francisco)) small business (grant OR loan OR assistance OR resource)')
+
+# Make twitter search call
+# Parse through twitter search results
+# Scrape through each URL to validate that it looks 'somewhat' legit.
+# If somewhat legit, add to a google spreadsheet.
+# HUMAN: read through spreadsheet, gather relevant table column information, add to official raw data spreadsheet.
+# HUMAN: mark loans that have expired as such, 'expired' column
+# ROBOT: read from raw data spreadsheet weekly, and add new sources to the database, while removing expired sources.
