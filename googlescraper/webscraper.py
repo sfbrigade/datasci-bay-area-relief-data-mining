@@ -11,14 +11,119 @@
 
 import requests
 from bs4 import BeautifulSoup
+import urllib.parse
 import re
 
 ### automate the google search 
 ### in separate file to keep testing separate
 from googlesearcher import Grants
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
 
-grants_list = Grants().get_search_results()
-print(grants_list)
+chrome_options = Options()
+# chrome_options.add_argument('--headless')
+driver = webdriver.Chrome(options=chrome_options)
+class AutomateGoogle():
+    def load_with_selenium(self, query: str) -> str:
+        # bay%20area%20covid%20business%20grants
+        driver.get('https://www.google.com/search?hl=en&as_q={}&as_qdr=m&as_occt=any&safe=images'.format(urllib.parse.quote_plus(query)))
+        # google_search = driver.find_elements_by_name("btnK")[1]
+        # driver.implicitly_wait(100)
+        # ActionChains(driver).move_to_element(google_search).click(google_search).perform()
+
+    def pull_out_results(self):
+        soup = BeautifulSoup(driver.page_source.encode('utf-8'), 'lxml')
+        h3_results = soup.find_all('h3')
+        if len(h3_results) > 0:
+            with open('result.txt', 'a') as results:
+                for info in h3_results:
+                    if 'href' in info.parent.attrs:
+                        url = info.parent.attrs['href'] + '\n'
+                        print(url)
+                        results.write(url)
+
+    def get_next_page(self) -> str:
+        next = driver.find_elements_by_id('pnnext')[0]
+        driver.implicitly_wait(100)
+        ActionChains(driver).move_to_element(next).click(next).perform()
+
+automator = AutomateGoogle()
+automator.load_with_selenium('sf bay area covid business grants')
+automator.pull_out_results()
+for i in range(10):
+    automator.get_next_page()
+    automator.pull_out_results()
+
+automator.load_with_selenium('sf bay area covid business loans')
+automator.pull_out_results()
+for i in range(10):
+    automator.get_next_page()
+    automator.pull_out_results()
+
+# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
+# h3_results = soup.find_all('h3')
+# if len(h3_results) > 0:
+#     with open('result.txt', 'a') as results:
+#         for info in h3_results:
+#             if 'href' in info.parent.attrs:
+#                 url = info.parent.attrs['href'] + '\n'
+#                 print(url)
+#                 results.write(url)
+# next = driver.find_elements_by_id('pnnext')[0]
+# driver.implicitly_wait(100)
+# ActionChains(driver).move_to_element(next).click(next).perform()
+# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
+# h3_results = soup.find_all('h3')
+# if len(h3_results) > 0:
+#     with open('result.txt', 'a') as results:
+#         for info in h3_results:
+#             if 'href' in info.parent.attrs:
+#                 url = info.parent.attrs['href'] + '\n'
+#                 print(url)
+#                 results.write(url)
+# next = driver.find_elements_by_id('pnnext')[0]
+# driver.implicitly_wait(100)
+# ActionChains(driver).move_to_element(next).click(next).perform()
+# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
+# h3_results = soup.find_all('h3')
+# if len(h3_results) > 0:
+#     with open('result.txt', 'a') as results:
+#         for info in h3_results:
+#             if 'href' in info.parent.attrs:
+#                 url = info.parent.attrs['href'] + '\n'
+#                 print(url)
+#                 results.write(url)
+# next = driver.find_elements_by_id('pnnext')[0]
+# driver.implicitly_wait(100)
+# ActionChains(driver).move_to_element(next).click(next).perform()
+# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
+# h3_results = soup.find_all('h3')
+# if len(h3_results) > 0:
+#     with open('result.txt', 'a') as results:
+#         for info in h3_results:
+#             if 'href' in info.parent.attrs:
+#                 url = info.parent.attrs['href'] + '\n'
+#                 print(url)
+#                 results.write(url)
+# next = driver.find_elements_by_id('pnnext')[0]
+# driver.implicitly_wait(100)
+# ActionChains(driver).move_to_element(next).click(next).perform()
+# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
+# h3_results = soup.find_all('h3')
+# if len(h3_results) > 0:
+#     with open('result.txt', 'a') as results:
+#         for info in h3_results:
+#             if 'href' in info.parent.attrs:
+#                 url = info.parent.attrs['href'] + '\n'
+#                 print(url)
+#                 results.write(url)
+# google_search_results_web = Grants().get_search_results()
+# soup = BeautifulSoup(google_search_results_web.text, "lxml")
+# for info in soup.find_all('h3'):
+#     print(info.text)
+#     print('-----')
+
 
 def scrape_url(url):
     r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -27,7 +132,8 @@ def scrape_url(url):
 
     ### extract links from website into data structure
     ### maybe store in dictionary not array?
-    links = {}
+    links = []
+    urls = []
 
     ### using get_text() method
     ### href = True instead of using attrs - not sure why this works instead?
@@ -48,19 +154,13 @@ def scrape_url(url):
             print("ignore, this has svg")
         else:
             print(link)
-            links[link.get_text()] = link
+            links.append(link)
+            urls.append(link.attrs['href'])
         
-        
-        
-    
-    print(links)
-
+    for url in urls:
+        print("url:", url)
 
 ### testing w/ just the first link
-grant = grants_list[0]
-url = grant
-print("URL = ", url)
-scrape_url(url)
 
 
 ### this works - reinstate after testing

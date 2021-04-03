@@ -1,9 +1,12 @@
+import datetime
+
 import requests
 import json
 import urllib
 import csv
 import pathlib
 import re
+import arrow
 from typing import Dict, List, Union
 
 # type aliases
@@ -50,7 +53,15 @@ class TwitterScraper:
         """
         Interpolate query into Twitter API URL
         """
-        api_base = 'https://api.twitter.com/2/tweets/search/recent?query={query}&max_results=10&tweet.fields=created_at'
+        todays_date_utc = arrow.utcnow()
+        one_month_ago = todays_date_utc.shift(months=-1).format('YYYY-MM-DDTHH:mm:ss')
+        # formatted_date = datetime.datetime.utcnow().isoformat(timespec=arrow.for)
+        # formatted_date = todays_date_utc
+
+
+        api_base = 'https://api.twitter.com/2/tweets/search/recent?query={}&max_results=50&tweet.fields=created_at'\
+            .format(self.query)
+        # api_base = 'https://api.twitter.com/2/tweets/search/recent?start_time={formatted_date}&query={query}&max_results=50&tweet.fields=created_at'
         # we only want to add the next token parameter if we need it, otherwise the URL will be invalid
         if len(self.next_token) > 0:
             api_base += '&next_token={next_token}'.format(next_token=self.next_token)
@@ -66,6 +77,7 @@ class TwitterScraper:
         headers = { 'Authorization': bearer_token }
         r = requests.get(endpoint, headers=headers)
         # errors for 4xx or 5xx responses
+        print(r.text)
         r.raise_for_status()
         return r.json()
 
@@ -131,7 +143,7 @@ class TwitterScraper:
 
 s = TwitterScraper()
 s.scrape('((bay area) OR (san francisco)) small business (grant OR loan OR assistance OR resource)')
-
+# s.scrape('san francisco small business grant')
 # Make twitter search call
 # Parse through twitter search results
 # Scrape through each URL to validate that it looks 'somewhat' legit.
