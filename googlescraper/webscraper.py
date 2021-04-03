@@ -60,7 +60,7 @@ automator.pull_out_results()
 for i in range(10):
     automator.get_next_page()
     automator.pull_out_results()
-
+driver.quit()
 # soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
 # h3_results = soup.find_all('h3')
 # if len(h3_results) > 0:
