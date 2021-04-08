@@ -1,14 +1,3 @@
-    ### notes
-
-# if 403 error: pretend i'm firefox's open-source renderer
-    # r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
-
-# find single (find) vs all
-    # soup.find_all(x)
-
-# print formatted html
-    # print(soup.prettify())
-
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
@@ -16,7 +5,7 @@ import re
 
 ### automate the google search 
 ### in separate file to keep testing separate
-from googlesearcher import Grants
+# You must download the version code of chrome driver for your computer: https://chromedriver.chromium.org/downloads
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
@@ -61,69 +50,6 @@ for i in range(10):
     automator.get_next_page()
     automator.pull_out_results()
 driver.quit()
-# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
-# h3_results = soup.find_all('h3')
-# if len(h3_results) > 0:
-#     with open('result.txt', 'a') as results:
-#         for info in h3_results:
-#             if 'href' in info.parent.attrs:
-#                 url = info.parent.attrs['href'] + '\n'
-#                 print(url)
-#                 results.write(url)
-# next = driver.find_elements_by_id('pnnext')[0]
-# driver.implicitly_wait(100)
-# ActionChains(driver).move_to_element(next).click(next).perform()
-# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
-# h3_results = soup.find_all('h3')
-# if len(h3_results) > 0:
-#     with open('result.txt', 'a') as results:
-#         for info in h3_results:
-#             if 'href' in info.parent.attrs:
-#                 url = info.parent.attrs['href'] + '\n'
-#                 print(url)
-#                 results.write(url)
-# next = driver.find_elements_by_id('pnnext')[0]
-# driver.implicitly_wait(100)
-# ActionChains(driver).move_to_element(next).click(next).perform()
-# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
-# h3_results = soup.find_all('h3')
-# if len(h3_results) > 0:
-#     with open('result.txt', 'a') as results:
-#         for info in h3_results:
-#             if 'href' in info.parent.attrs:
-#                 url = info.parent.attrs['href'] + '\n'
-#                 print(url)
-#                 results.write(url)
-# next = driver.find_elements_by_id('pnnext')[0]
-# driver.implicitly_wait(100)
-# ActionChains(driver).move_to_element(next).click(next).perform()
-# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
-# h3_results = soup.find_all('h3')
-# if len(h3_results) > 0:
-#     with open('result.txt', 'a') as results:
-#         for info in h3_results:
-#             if 'href' in info.parent.attrs:
-#                 url = info.parent.attrs['href'] + '\n'
-#                 print(url)
-#                 results.write(url)
-# next = driver.find_elements_by_id('pnnext')[0]
-# driver.implicitly_wait(100)
-# ActionChains(driver).move_to_element(next).click(next).perform()
-# soup = BeautifulSoup(driver.page_source.encode('utf-8'), "lxml")
-# h3_results = soup.find_all('h3')
-# if len(h3_results) > 0:
-#     with open('result.txt', 'a') as results:
-#         for info in h3_results:
-#             if 'href' in info.parent.attrs:
-#                 url = info.parent.attrs['href'] + '\n'
-#                 print(url)
-#                 results.write(url)
-# google_search_results_web = Grants().get_search_results()
-# soup = BeautifulSoup(google_search_results_web.text, "lxml")
-# for info in soup.find_all('h3'):
-#     print(info.text)
-#     print('-----')
-
 
 def scrape_url(url):
     r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
