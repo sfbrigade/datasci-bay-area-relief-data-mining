@@ -37,19 +37,35 @@ class AutomateGoogle():
         driver.implicitly_wait(100)
         ActionChains(driver).move_to_element(next).click(next).perform()
 
-automator = AutomateGoogle()
-automator.load_with_selenium('sf bay area covid business grants')
-automator.pull_out_results()
-for i in range(10):
-    automator.get_next_page()
-    automator.pull_out_results()
+search_template = "{} california covid {}"
+locations = ["contra costa county", "santa clara county", "marin county", "alameda county", "san francisco county", "san mateo county", "solano county", "sonoma county", "napa county"]
+services = ["business grants", "business loans", "grants", "loans", "services", "assistance"]
 
-automator.load_with_selenium('sf bay area covid business loans')
-automator.pull_out_results()
-for i in range(10):
-    automator.get_next_page()
-    automator.pull_out_results()
+automator = AutomateGoogle()
+for location in locations:
+    for service in services:
+        automator.load_with_selenium(search_template.format(location, service))
+        automator.pull_out_results()
+        for i in range(3):
+            automator.get_next_page()
+            automator.pull_out_results()
+
 driver.quit()
+
+## APPLY button / link --> uprank
+## Identify if it's an article --> downrank
+
+# automator.load_with_selenium('alameda county ca covid business grants')
+# automator.pull_out_results()
+# for i in range(5):
+#     automator.get_next_page()
+#     automator.pull_out_results()
+#
+# automator.load_with_selenium('san francisco bay area covid business loans')
+# automator.pull_out_results()
+# for i in range(10):
+#     automator.get_next_page()
+#     automator.pull_out_results()
 
 def scrape_url(url):
     r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
