@@ -63,9 +63,9 @@ class TwitterScraper:
             .format(self.query)
         # api_base = 'https://api.twitter.com/2/tweets/search/recent?start_time={formatted_date}&query={query}&max_results=50&tweet.fields=created_at'
         # we only want to add the next token parameter if we need it, otherwise the URL will be invalid
-        if len(self.next_token) > 0:
-            api_base += '&next_token={next_token}'.format(next_token=self.next_token)
 
+        if self.next_token and len(self.next_token) > 0:
+            api_base += '&next_token={next_token}'.format(next_token=self.next_token)
         return api_base.format(query=self.query)
 
     def make_request(self) -> api_response:
@@ -105,8 +105,8 @@ class TwitterScraper:
         r = self.make_request()
         self.to_csv(r['data'])
         meta = r['meta']
-        print(meta)
-        self.set_next_token(meta['next_token'] or '')
+        if 'next_token' in meta:
+            self.set_next_token(meta['next_token'] or '')
         # while len(self.next_token) > 0:
         for i in range(3):
             print('Requesting API')
