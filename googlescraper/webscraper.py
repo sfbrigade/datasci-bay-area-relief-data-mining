@@ -2,6 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.parse
 import re
+import time
+from random_user_agent.user_agent import UserAgent
+from random_user_agent.params import SoftwareName, OperatingSystem
 
 ### automate the google search 
 ### in separate file to keep testing separate
@@ -10,9 +13,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 
-chrome_options = Options()
+software_names = [SoftwareName.CHROME.value]
+operating_systems = [OperatingSystem.WINDOWS.value,
+                     OperatingSystem.MAC.value,
+                     OperatingSystem.LINUX.value]
+user_agent_rotator = UserAgent(software_names=software_names,
+                               operating_systems=operating_systems,
+                               limit=100)
 # chrome_options.add_argument('--headless')
-driver = webdriver.Chrome(options=chrome_options)
 class AutomateGoogle():
     def load_with_selenium(self, query: str) -> str:
         # bay%20area%20covid%20business%20grants
@@ -43,14 +51,19 @@ services = ["business grants", "business loans", "grants", "loans", "services", 
 
 automator = AutomateGoogle()
 for location in locations:
+    time.sleep(900)
     for service in services:
+        user_agent = user_agent_rotator.get_random_user_agent()
+        chrome_options = Options()
+        # chrome_options.add_argument(f'user-agent={user_agent}')
+        driver = webdriver.Chrome(options=chrome_options)
         automator.load_with_selenium(search_template.format(location, service))
         automator.pull_out_results()
         for i in range(3):
             automator.get_next_page()
             automator.pull_out_results()
+        driver.quit()
 
-driver.quit()
 
 ## APPLY button / link --> uprank
 ## Identify if it's an article --> downrank
