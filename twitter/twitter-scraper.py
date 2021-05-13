@@ -135,7 +135,8 @@ class TwitterScraper:
             )
             dw.writerows(clean_results)
 
-    def scrape(self, query: str) -> None:
+    def scrape(self, query: object) -> object:
+
         """
         Pulls together other functions to actually make and save requests
         """
