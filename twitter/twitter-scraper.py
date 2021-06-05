@@ -17,6 +17,7 @@ class TwitterScraper:
     def __init__(self) -> None:
         self.set_secrets()
         self.next_token = ''
+        self.tweet_dict = set()
     
     def set_secrets(self) -> None:
         """
@@ -87,13 +88,20 @@ class TwitterScraper:
         """
         text = tweet['text']
         tweet['text'] = re.sub(r'\s+', ' ', text)
-        links = []
-        for link in re.findall(r'(https:\/\/[^,"\s+]*)', text):
+        links = re.findall(r'(https:\/\/[^,"\s+]+[^.])', text)
+
+        if tweet['text'] in self.tweet_dict:
+            return {}
+        else:
+            self.tweet_dict.add(tweet['text'])
+
+        if not links:
+            return {}
+
+        for link in links:
             if link[-1] == '.':
-                new_link  = link[:-1]
-                links.append(new_link)
-            else:
                 links.append(link)
+
         tweet['links'] = links
         return tweet
 
@@ -107,24 +115,18 @@ class TwitterScraper:
         meta = r['meta']
         if 'next_token' in meta:
             self.set_next_token(meta['next_token'] or '')
-        # while len(self.next_token) > 0:
-        for i in range(3):
-            print('Requesting API')
-            try:
-                r = self.make_request()
-                print('Response Recieved -- Saving Results')
-                self.to_csv(r['data'])
-                meta = r['meta']
-                self.set_next_token(meta['next_token'] or '')
-                print('Results Saved')
-            except:
-                print('Wait a while')
 
     def to_csv(self, results: List[Dict[str, str]]) -> None:
         """
-        Saves a dict of tweets into a TSV (tab-separated values) with id and text columns
+        Saves a dict of tweets into a CSV (comma-separated values) with id and text columns
         """
-        clean_results = list(map(self.clean_text, results))
+        clean_results = []
+
+        for result in results:
+            cleaned_tweet = self.clean_text(result)
+            if 'text' in cleaned_tweet:
+                clean_results.append(cleaned_tweet)
+
         with open(self.find_file('tweets.csv'), 'a+') as outfile:
             dw = csv.DictWriter(
                 outfile,
@@ -133,7 +135,8 @@ class TwitterScraper:
             )
             dw.writerows(clean_results)
 
-    def scrape(self, query: str) -> None:
+    def scrape(self, query: object) -> object:
+
         """
         Pulls together other functions to actually make and save requests
         """
@@ -145,9 +148,8 @@ s = TwitterScraper()
 s.scrape('((bay area) OR (san francisco)) small business (grant OR loan OR assistance OR resource)')
 # s.scrape('san francisco small business grant')
 # Make twitter search call
-# Parse through twitter search results
-# Scrape through each URL to validate that it looks 'somewhat' legit.
-# If somewhat legit, add to a google spreadsheet.
+# Write tweets.csv to a google sheet?
+# Data Jam Instructions
 # HUMAN: read through spreadsheet, gather relevant table column information, add to official raw data spreadsheet.
 # HUMAN: mark loans that have expired as such, 'expired' column
 # ROBOT: read from raw data spreadsheet weekly, and add new sources to the database, while removing expired sources.

@@ -4,3 +4,6 @@ backup.tsv
 .idea/
 env/
 googlescraper/.idea/
+twitter/PLAN.md
+.DS_Store
+.vscode/
