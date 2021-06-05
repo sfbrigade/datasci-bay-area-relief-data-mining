@@ -1,3 +1,6 @@
 twitter/secrets.json
 tweets.tsv
 backup.tsv
+.idea/
+env/
+googlescraper/.idea/
