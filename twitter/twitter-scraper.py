@@ -8,6 +8,8 @@ import pathlib
 import re
 import arrow
 from typing import Dict, List, Union
+from validators.url import url
+
 
 # type aliases
 data = List[Dict[str, str]]
@@ -115,6 +117,24 @@ class TwitterScraper:
         meta = r['meta']
         if 'next_token' in meta:
             self.set_next_token(meta['next_token'] or '')
+    
+
+
+    
+    def check_url(self, tweet: Dict[str,str]) -> bool:
+        """
+        Checks if there is at least one URL in a tweet.
+        Checks if URL is a valid URL.
+        """
+        if type(tweet["links"]) == type(None) or len(tweet["links"])==0 :
+            return False 
+        
+        link= tweet["links"][0]
+        if len(link)==0:
+            return False
+        else:
+            return bool(url(link)) #checks if url is valid.
+
 
     def to_csv(self, results: List[Dict[str, str]]) -> None:
         """
@@ -124,7 +144,8 @@ class TwitterScraper:
 
         for result in results:
             cleaned_tweet = self.clean_text(result)
-            if 'text' in cleaned_tweet:
+            has_url=self.check_url(result)
+            if 'text' in cleaned_tweet and has_url:
                 clean_results.append(cleaned_tweet)
 
         with open(self.find_file('tweets.csv'), 'a+') as outfile:
