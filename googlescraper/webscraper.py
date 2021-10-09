@@ -69,9 +69,9 @@ client = boto3.client('s3')
 pathlib.Path().absolute()
 
 for file in os.listdir():
-    if '.txt' in file:
+    if '-result.txt' in file:
         upload_file_bucket = 'google-search-01'
-        upload_file_key = 'result_google' + str(file)
+        upload_file_key = str(file)
         try:
             client.upload_file(file, upload_file_bucket, upload_file_key)
         except RuntimeError as err:
