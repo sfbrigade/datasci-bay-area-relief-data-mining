@@ -1,8 +1,13 @@
+import datetime
+import pathlib
+
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
 import re
 import time
+import boto3
+import os
 
 ### automate the google search 
 ### in separate file to keep testing separate
@@ -10,6 +15,10 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 
+filename = '{}-result.txt'.format(datetime.datetime.now().strftime("%m-%d-%Y_%H:%M:%S"))
+
+def finished_uploading():
+    print('Done uploading!')
 
 # chrome_options.add_argument('--headless')
 class AutomateGoogle():
@@ -23,7 +32,7 @@ class AutomateGoogle():
         soup = BeautifulSoup(driver.page_source.encode('utf-8'), 'lxml')
         h3_results = soup.find_all('h3')
         if len(h3_results) > 0:
-            with open('result.txt', 'a') as results:
+            with open(filename, 'a') as results:
                 for info in h3_results:
                     if 'href' in info.parent.attrs:
                         url = info.parent.attrs['href'] + '\n'
@@ -41,7 +50,6 @@ services = ["business grants", "business loans", "grants", "loans", "services", 
 
 automator = AutomateGoogle()
 for location in locations:
-    time.sleep(900)
     for service in services:
         driver = webdriver.Chrome()
         automator.load_with_selenium(search_template.format(location, service))
@@ -50,22 +58,25 @@ for location in locations:
             automator.get_next_page()
             automator.pull_out_results()
         driver.quit()
+    time.sleep(900)
 
 
 ## APPLY button / link --> uprank
 ## Identify if it's an article --> downrank
 
-# automator.load_with_selenium('alameda county ca covid business grants')
-# automator.pull_out_results()
-# for i in range(5):
-#     automator.get_next_page()
-#     automator.pull_out_results()
-#
-# automator.load_with_selenium('san francisco bay area covid business loans')
-# automator.pull_out_results()
-# for i in range(10):
-#     automator.get_next_page()
-#     automator.pull_out_results()
+
+client = boto3.client('s3')
+pathlib.Path().absolute()
+
+for file in os.listdir():
+    if '.txt' in file:
+        upload_file_bucket = 'google-search-01'
+        upload_file_key = 'result_google' + str(file)
+        try:
+            client.upload_file(file, upload_file_bucket, upload_file_key)
+        except RuntimeError as err:
+            print("File upload ran into an error {}".format(err))
+        os.remove(file)
 
 def scrape_url(url):
     r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -101,16 +112,6 @@ def scrape_url(url):
         
     for url in urls:
         print("url:", url)
-
-### testing w/ just the first link
-
-
-### this works - reinstate after testing
-# for grant in grants_list:
-#     url = grant
-#     scrape_url(url)
-
-
 
 
 
